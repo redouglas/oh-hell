@@ -7,7 +7,108 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+ul, li {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.game-table input[type="text"] {
+  width: 40px;
+}
+
+.game-table thead {
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.game-table-col {
+  margin: 0 20px;
+}
+
+.game-table-col thead {
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.7em;
+}
+
+table input, table td {
+  text-align: center;
+}
+
+table.over input {
+  border: 1px solid white;
+  pointer-events: none;
+}
+
+.game-table thead tr td {
+  text-align: center;
+}
+
+.end-round-button.over {
+  display: none;
+}
+
+.game-table-col thead tr {
+  opacity: 0;
+}
+.game-table tbody tr:first-child .game-table-col thead tr {
+  opacity: 1;
+}
+
+
+.game-config {
+  background-color: whitesmoke;
+  border-radius: 3px;
+  margin: 30px auto;
+  width: 300px;
+  padding: 10px 20px 20px 20px;
+}
+
+.game-config ul {
+  margin: 20px 0;
+}
+
+.game-config ul li {
+  width: 100%;
+  margin-bottom: 10px
+}
+.game-config .player-delete {
+  cursor: pointer;
+  color: red;
+  font-size: 0.7em;
+  display: none;
+  vertical-align: middle;
+}
+
+.game-config .current-players li:hover .player-delete{
+  display: inline;
+  margin-left: 10px
+}
+
+.start-game-button {
+  display: block;
+  width: 100%;
+  margin: 20px 0 0 0;
+  padding: 8px
+}
+
+
+.error {
+  background-color: #8a1414;
+  padding: 20px;
+  color: white;
+  position: fixed;
+  width: 50%;
+  bottom: 10px;
+  left: 50%;
+  margin-left: -25%;
+  border-radius: 3px;
+}
+
+.summary {
+  position: fixed;
+  right: 10px;
+  left: 10px;
 }
