@@ -9,6 +9,10 @@ interface IAppState {
   players: Array<string>;
   betBonus: number;
   rounds: Array<IRound>;
+  cardsMin: number;
+  cardsMax: number;
+  cardsDecreasing: Boolean;
+  gameOver: Boolean;
 }
 
 export interface IPlayerRound {
@@ -20,6 +24,7 @@ export interface IPlayerRound {
 export interface IRound {
   over?: boolean;
   players: Array<IPlayerRound>
+  cardCount: number;
 }
 
 export class App extends React.Component<IAppProps, IAppState> {
@@ -28,7 +33,11 @@ export class App extends React.Component<IAppProps, IAppState> {
     this.state = {
       betBonus: 10,
       players: [],
-      rounds: []
+      rounds: [],
+      cardsMax: 10,
+      cardsMin: 3,
+      cardsDecreasing: false,
+      gameOver: false,
     }
   }
 
@@ -54,11 +63,28 @@ export class App extends React.Component<IAppProps, IAppState> {
   endRound = () => {
     const newRounds = [...this.state.rounds];
     newRounds[this.state.rounds.length - 1].over = true;
-    newRounds.push(this.generateRound());
-    this.setState({rounds: newRounds})
+    const currentCardCount = this.state.rounds[this.state.rounds.length - 1].cardCount;
+    
+    // check game over
+    if (this.state.cardsDecreasing && currentCardCount === this.state.cardsMin) {
+      this.setState({gameOver: true});
+    } else {
+      let nextCardCount; 
+
+      if (this.state.cardsDecreasing) {
+        nextCardCount = currentCardCount - 1;
+      } else if (currentCardCount + 1 <= this.state.cardsMax) {
+        nextCardCount = currentCardCount + 1;
+      } else {
+        nextCardCount = currentCardCount - 1;
+        this.setState({cardsDecreasing: true});
+      }
+      newRounds.push(this.generateRound(nextCardCount));
+    }    
+    this.setState({rounds: newRounds});
   }
 
-  generateRound(): IRound {
+  generateRound(cardCount: number): IRound {
     const newRoundPlayers: Array<IPlayerRound> = this.state.players.map(player => {
       return {
         player: player,
@@ -67,7 +93,8 @@ export class App extends React.Component<IAppProps, IAppState> {
     });
     const newRound: IRound = {
       over: false,
-      players: newRoundPlayers
+      players: newRoundPlayers,
+      cardCount: cardCount
     };
     return newRound
   }
@@ -76,8 +103,16 @@ export class App extends React.Component<IAppProps, IAppState> {
     this.setState({betBonus: parseInt(e.target.value, 10)});
   }
 
+  handleCardMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({cardsMax: parseInt(e.target.value, 10)});
+  }
+
+  handleCardMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({cardsMin: parseInt(e.target.value, 10)});
+  }
+
   handleStartGame = () => {
-    const firstRound = this.generateRound();
+    const firstRound = this.generateRound(this.state.cardsMin);
     this.setState({rounds: [firstRound]});
   }
 
@@ -92,8 +127,18 @@ export class App extends React.Component<IAppProps, IAppState> {
           <h1>Oh Hell!</h1>
           <PlayerConfig players={this.state.players} addPlayerFn={this.addPlayer} removePlayerFn={this.removePlayer}></PlayerConfig>
           <h3>Options:</h3>
-          <label>Bet Bonus:</label>
-          <input type="text" value={this.state.betBonus} onChange={this.handleBetBonusChange} />
+          <div>
+            <label>Bet Bonus:</label>
+            <input type="number" value={this.state.betBonus} onChange={this.handleBetBonusChange} />
+          </div>
+          <div>
+            <label>Cards min:</label>
+            <input type="number" value={this.state.cardsMin} onChange={this.handleCardMinChange} />
+          </div>
+          <div>
+            <label>Cards max:</label>
+            <input type="number" value={this.state.cardsMax} onChange={this.handleCardMaxChange} />
+          </div>
           <button onClick={this.handleStartGame} className="start-game-button">Start Game</button>
         </div>
       )
@@ -116,7 +161,7 @@ export class App extends React.Component<IAppProps, IAppState> {
   }
 
   renderRounds() {
-    return this.state.rounds.map((round, index) => <Round key={index} round={round} cardCount={index + 3} betBonus={this.state.betBonus} endRoundFn={this.endRound} />)
+    return this.state.rounds.map((round, index) => <Round key={index} round={round} betBonus={this.state.betBonus} endRoundFn={this.endRound} />)
   }
 
   render() {

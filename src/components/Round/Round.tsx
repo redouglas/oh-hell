@@ -2,7 +2,6 @@ import React from 'react';
 import {IRound, IPlayerRound} from '../../App';
 
 interface IRoundProps {
-  cardCount: number;
   betBonus: number;
   round: IRound;
   endRoundFn: Function;
@@ -30,7 +29,7 @@ class Round extends React.Component<IRoundProps, IRoundState> {
     for (let p of this.state.playerRounds) {
       if (p.bet) { betTotal = betTotal + p.bet; }
     }
-    if (betTotal === this.props.cardCount) {
+    if (betTotal === this.props.round.cardCount) {
       return false;
     }
     return true;
@@ -98,7 +97,7 @@ class Round extends React.Component<IRoundProps, IRoundState> {
   render() {
     return (
         <tr>
-          <td>{this.props.cardCount}</td>
+          <td>{this.props.round.cardCount}</td>
           {this.renderCols()}
           <td>
             <button className={'end-round-button' + (this.props.round.over ? ' over' : ' in-progress')} onClick={() => this.handleRoundEnd()}>End Round</button>
